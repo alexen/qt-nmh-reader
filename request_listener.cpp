@@ -7,8 +7,7 @@ namespace nmh {
 
 RequestListener::RequestListener( QObject* parent )
      : QObject{ parent }
-{
-}
+{}
 
 
 } // namespace nmh

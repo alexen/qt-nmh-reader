@@ -12,6 +12,10 @@ namespace alexen {
 namespace nmh {
 
 
+class RequestListener;
+class ResponseSender;
+
+
 class Application : public QMainWindow {
      Q_OBJECT
 public:
@@ -21,7 +25,9 @@ public:
      void run();
 
 private:
-     Ui::Application *ui_;
+     Ui::Application *ui_ = {};
+     RequestListener* requestListener_ = {};
+     ResponseSender* responseSender_ = {};
 };
 
 

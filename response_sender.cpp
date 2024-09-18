@@ -7,8 +7,7 @@ namespace nmh {
 
 ResponseSender::ResponseSender( QObject* parent )
      : QObject{ parent }
-{
-}
+{}
 
 
 } // namespace nmh
