@@ -13,6 +13,29 @@ find_package(
      REQUIRED
 )
 
+# Применяем интересную методику сохранения полезных свойств
+# в фиктивных целях для последующего многократного использования
+# в разных местах преокта.
+#
+# @see https://palikar.github.io/posts/cmake_structure/
+#
+add_library(ENABLE_ALL_WARNINGS_AS_ERROR INTERFACE)
+target_compile_options(
+     ENABLE_ALL_WARNINGS_AS_ERROR
+     INTERFACE
+          -Wall
+          -Werror
+          -pedantic
+)
+add_library(ENABLE_CPP_STANDARD INTERFACE)
+set_target_properties(
+     ENABLE_CPP_STANDARD
+     PROPERTIES
+          CXX_STANDARD 17
+          CXX_STANDARD_REQUIRED ON
+)
+
+
 add_executable(${PROJECT_NAME})
 target_sources(
      ${PROJECT_NAME}
@@ -29,6 +52,8 @@ target_sources(
 target_link_libraries(
      ${PROJECT_NAME}
      PRIVATE
+          ENABLE_CPP_STANDARD
+          ENABLE_ALL_WARNINGS_AS_ERROR
           Qt5::Widgets
 )
 set_target_properties(
