@@ -8,6 +8,10 @@ namespace Ui { class Application; }
 QT_END_NAMESPACE
 
 
+namespace alexen {
+namespace nmh {
+
+
 class Application : public QMainWindow {
      Q_OBJECT
 public:
@@ -17,5 +21,9 @@ public:
      void run();
 
 private:
-     Ui::Application *ui;
+     Ui::Application *ui_;
 };
+
+
+} // namespace nmh
+} // namespace alexen

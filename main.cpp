@@ -1,11 +1,13 @@
-#include "application.h"
-
 #include <QApplication>
+#include <application.h>
+
 
 int main( int argc, char *argv[] )
 {
      QApplication app{ argc, argv };
-     Application application;
+
+     alexen::nmh::Application application;
      application.run();
+
      return app.exec();
 }
