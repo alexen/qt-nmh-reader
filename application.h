@@ -24,7 +24,14 @@ public:
 
      void run();
 
+private slots:
+     void readMessageError( const QString& );
+     void messageReceived( const QByteArray& );
+     void shutdownApplication();
+
 private:
+     void showMessage( const QString& message );
+
      Ui::Application *ui_ = {};
      RequestListener* requestListener_ = {};
      ResponseSender* responseSender_ = {};
