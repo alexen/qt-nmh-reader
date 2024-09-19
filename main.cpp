@@ -7,6 +7,8 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include <io_tools.h>
+
 
 int main( int argc, char *argv[] )
 {
@@ -15,7 +17,7 @@ int main( int argc, char *argv[] )
           QApplication app{ argc, argv };
 
           alexen::nmh::Application application;
-          application.run();
+          application.start();
 
           return app.exec();
      }

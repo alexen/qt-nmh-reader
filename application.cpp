@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QStringLiteral>
+#include <QThread>
+#include <QEvent>
 
 #include <ui_application.h>
 #include <request_listener.h>
@@ -16,32 +18,10 @@ namespace nmh {
 Application::Application( QWidget *parent )
      : QMainWindow{ parent }
      , ui_{ new Ui::Application }
-     , requestListener_{ new RequestListener{ stdin, this } }
      , responseSender_{ new ResponseSender{ this } }
 {
-     qDebug() << __PRETTY_FUNCTION__;
-
      ui_->setupUi( this );
-
-     qInfo() << "Initializing Application: connect RequestListener signals";
-     connect(
-          requestListener_
-          , SIGNAL(readMessageError(const QString&))
-          , this
-          , SLOT(readMessageError(const QString&))
-          );
-     connect(
-          requestListener_
-          , SIGNAL(inputStreamClosed())
-          , this
-          , SLOT(shutdownApplication())
-          );
-     connect(
-          requestListener_
-          , SIGNAL(messageReceived(const QByteArray&))
-          , this
-          , SLOT(messageReceived(const QByteArray&))
-          );
+     qDebug() << __PRETTY_FUNCTION__;
 }
 
 
@@ -52,38 +32,43 @@ Application::~Application()
 }
 
 
-void Application::run()
+void Application::start()
 {
      qDebug() << __PRETTY_FUNCTION__;
-     requestListener_->start();
-     show();
+     RequestListener* listener = new RequestListener{ stdin };
+     QThread* thread = new QThread;
+
+     listener->moveToThread( thread );
+
+     /// Вызов необходим для старта потокового воркера
+     connect( thread, SIGNAL(started()), listener, SLOT(start()) );
+     /// Вызов необходим для корректного выключения? потока
+     connect( listener, SIGNAL(inputChannelClosed()), thread, SLOT(quit()) );
+     /// Необходим для корректного удаления объекта класса listener
+     connect( listener, SIGNAL(inputChannelClosed()), listener, SLOT(deleteLater()) );
+     /// Необходим для корректного удаления объекта класса QThread
+     connect( thread, SIGNAL(finished()), thread, SLOT(deleteLater()) );
+
+     connect(
+          listener
+          , SIGNAL(messageReceived(const QByteArray&))
+          , this
+          , SLOT(messageReceived(const QByteArray&))
+          );
+
+     thread->start();
 }
 
-
-void Application::readMessageError( const QString& message )
+void Application::closeEvent( QCloseEvent* event )
 {
-     qDebug() << __PRETTY_FUNCTION__ << message;
-//     QMessageBox::critical( this, QStringLiteral( "Read message error" ), message );
-     ui_->statusLabel->setText( message );
+     event->ignore();
+     hide();
 }
 
 
 void Application::messageReceived( const QByteArray& message )
 {
      qDebug() << __PRETTY_FUNCTION__ << message;
-     ui_->plainTextEdit->appendPlainText( message );
-}
-
-
-void Application::shutdownApplication()
-{
-     qDebug() << __PRETTY_FUNCTION__;
-     close();
-}
-
-
-void Application::showMessage( const QString& message )
-{
      ui_->plainTextEdit->insertPlainText( message );
      show();
 }
