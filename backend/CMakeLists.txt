@@ -6,28 +6,6 @@ find_package(
      REQUIRED
 )
 
-# Применяем интересную методику сохранения полезных свойств
-# в фиктивных целях для последующего многократного использования
-# в разных местах преокта.
-#
-# @see https://palikar.github.io/posts/cmake_structure/
-#
-add_library(ENABLE_ALL_WARNINGS_AS_ERROR INTERFACE)
-target_compile_options(
-     ENABLE_ALL_WARNINGS_AS_ERROR
-     INTERFACE
-          -Wall
-          -Werror
-          -pedantic
-)
-add_library(ENABLE_CPP_STANDARD INTERFACE)
-set_target_properties(
-     ENABLE_CPP_STANDARD
-     PROPERTIES
-          CXX_STANDARD 17
-          CXX_STANDARD_REQUIRED ON
-)
-
 
 add_executable(${APPLICATION_NAME})
 target_sources(
@@ -42,9 +20,15 @@ target_sources(
 target_link_libraries(
      ${APPLICATION_NAME}
      PRIVATE
-          ENABLE_CPP_STANDARD
-          ENABLE_ALL_WARNINGS_AS_ERROR
           Qt5::Widgets
+)
+target_compile_options(
+     ${APPLICATION_NAME}
+     PRIVATE
+          -Wall
+          -Werror
+          -pedantic
+          $<$<CONFIG:DEBUG>:-ggdb3 -O0 -fno-inline>
 )
 set_target_properties(
      ${APPLICATION_NAME}
@@ -59,3 +43,16 @@ target_include_directories(
      ${APPLICATION_NAME}
      PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+include(GNUInstallDirs)
+set_target_properties(
+     ${APPLICATION_NAME}
+     PROPERTIES
+          INSTALL_RPATH $ORIGIN/../${CMAKE_INSTALL_LIBDIR}
+)
+
+
+install(TARGETS ${APPLICATION_NAME})
+
+
+add_subdirectory(google-chrome)
