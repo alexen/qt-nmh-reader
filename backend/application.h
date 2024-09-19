@@ -24,17 +24,12 @@ public:
 
      void start();
 
-signals:
-     void finish();
-
-protected:
-     void closeEvent( QCloseEvent* );
-
 private slots:
      void messageReceived( const QByteArray& );
 
 private:
      Ui::Application *ui_ = {};
+     RequestListener* requestListener_ = {};
      ResponseSender* responseSender_ = {};
 };
 
