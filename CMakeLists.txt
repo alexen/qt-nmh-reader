@@ -7,5 +7,9 @@ project(
      LANGUAGES CXX
 )
 
-add_subdirectory(extension)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+     set(CMAKE_INSTALL_PREFIX $ENV{HOME}/.local/${PROJECT_NAME} CACHE PATH "" FORCE)
+endif()
+
 add_subdirectory(backend)
+add_subdirectory(extension)
