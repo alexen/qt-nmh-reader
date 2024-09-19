@@ -1,0 +1,56 @@
+class Nmh {
+  constructor(channelName, incomingListener) {
+    this.channel = chrome.runtime.connectNative(channelName);
+    this.setIncomingListener(incomingListener)
+  }
+
+  setIncomingListener(listener) {
+    console.log("Incoming messages listener established")
+    this.channel.onMessage.addListener(listener);
+  }
+
+  sendMessage(message) {
+    console.log("Send: " + JSON.stringify(message))
+    this.channel.postMessage(message);
+  }
+}
+
+
+class MessageFactory {
+  constructor() {
+    this.messageCounter = 0;
+  }
+
+  createMessage(module, method, data) {
+    return {
+      id: ++this.messageCounter
+      , module: module
+      , method: method
+      , data: data
+      , timestamp: new Date().toISOString()
+    }
+  }
+}
+
+
+class Simon {
+  constructor(channelName) {
+    this.nmh = new Nmh(
+      channelName,
+      function(message) {
+        console.log("Rcvd: " + JSON.stringify(message))
+      }
+    );
+    this.messageFactory = new MessageFactory();
+  }
+
+  says(message) {
+    this.nmh.sendMessage(message);
+  }
+
+  call(module, method, data) {
+    this.nmh.sendMessage(this.messageFactory.createMessage(module, method, data));
+  }
+}
+
+let simon = new Simon("@PROJECT_NAME@");
