@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QByteArray>
+#include <QSocketNotifier>
 
 
 namespace alexen {
@@ -11,16 +12,23 @@ namespace nmh {
 class RequestListener : public QObject {
      Q_OBJECT
 public:
-     explicit RequestListener( QObject* parent = nullptr );
+     explicit RequestListener( FILE* istream, QObject* parent = nullptr );
+     ~RequestListener();
+
+     void start();
+     void stop();
 
 signals:
-     void inputStreamConnectError();
-     void readMessageLengthError();
-     void readMessageBodyError();
+     void readMessageError( const QString& );
      void inputStreamClosed();
+     void messageReceived( const QByteArray& );
+
+private slots:
+     void readMessage();
 
 private:
-     QByteArray read( FILE* istream  = stdin );
+     FILE* istream_ = {};
+     QSocketNotifier* readNotifier_ = {};
 };
 
 
