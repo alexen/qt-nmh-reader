@@ -40,12 +40,8 @@ add_executable(${PROJECT_NAME})
 target_sources(
      ${PROJECT_NAME}
      PRIVATE
-          application.ui
-          application.h
           application.cpp
-          request_listener.h
           request_listener.cpp
-          response_sender.h
           response_sender.cpp
           main.cpp
 )
