@@ -10,11 +10,6 @@
 #include <io_tools.h>
 
 
-#define EMIT_DEBUG( signal ) \
-     do { qDebug() << __PRETTY_FUNCTION__ << "emitting signal" << #signal; emit signal; } while( false )
-
-
-
 namespace alexen {
 namespace nmh {
 
@@ -54,14 +49,17 @@ void RequestListener::acceptMessage()
 
      QFile inputFile;
      inputFile.open( istream_, QIODevice::ReadOnly );
+     qDebug() << __PRETTY_FUNCTION__ << ": eof:" << inputFile.atEnd();
      if( inputFile.atEnd() )
      {
-          EMIT_DEBUG( inputChannelClosed() );
+          qDebug() << __PRETTY_FUNCTION__ << ": emit inputChannelClosed()";
+          emit inputChannelClosed();
           disableListening();
      }
      else if( QByteArray message; readMessage( inputFile, message ) )
      {
-          EMIT_DEBUG( messageReceived( message ) );
+          qDebug() << __PRETTY_FUNCTION__ << ": emit messageReceived(" << message << ")";
+          emit messageReceived( message );
      }
 }
 

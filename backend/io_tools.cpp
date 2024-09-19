@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QByteArray>
+#include <QDebug>
 
 
 namespace alexen {
@@ -17,8 +18,12 @@ quint32 readMessageLength( QFile& input )
 
 bool readMessage( QFile& input, const quint32 len, QByteArray& output )
 {
-     output = input.read( len );
-     return static_cast< quint32 >( output.size() ) == len;
+     if( len > 0 )
+     {
+          output = input.read( len );
+          return static_cast< quint32 >( output.size() ) == len;
+     }
+     return false;
 }
 
 
