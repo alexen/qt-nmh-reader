@@ -40,9 +40,10 @@ add_executable(${PROJECT_NAME})
 target_sources(
      ${PROJECT_NAME}
      PRIVATE
-          application.cpp
+          io_tools.cpp
           request_listener.cpp
           response_sender.cpp
+          application.cpp
           main.cpp
 )
 target_link_libraries(
