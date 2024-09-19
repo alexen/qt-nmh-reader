@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QObject>
-#include <QByteArray>
-#include <QSocketNotifier>
+
+QT_FORWARD_DECLARE_CLASS( QString );
+QT_FORWARD_DECLARE_CLASS( QByteArray );
+QT_FORWARD_DECLARE_CLASS( QSocketNotifier );
 
 
 namespace alexen {
@@ -15,18 +17,21 @@ public:
      explicit RequestListener( FILE* istream, QObject* parent = nullptr );
      ~RequestListener();
 
-     void start();
-     void stop();
-
 signals:
      void readMessageError( const QString& );
-     void inputStreamClosed();
      void messageReceived( const QByteArray& );
+     void inputChannelClosed();
+
+public slots:
+     void start();
 
 private slots:
-     void readMessage();
+     void acceptMessage();
 
 private:
+     void enableListening();
+     void disableListening();
+
      FILE* istream_ = {};
      QSocketNotifier* readNotifier_ = {};
 };

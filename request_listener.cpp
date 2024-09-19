@@ -5,10 +5,13 @@
 #include <QFile>
 #include <QStringLiteral>
 #include <QDebug>
+#include <QSocketNotifier>
+
+#include <io_tools.h>
 
 
-#define EMIT_AND_RETURN( signal ) \
-     do { qDebug() << __PRETTY_FUNCTION__ << "emitting signal" << #signal; emit signal; return; } while( false )
+#define EMIT_DEBUG( signal ) \
+     do { qDebug() << __PRETTY_FUNCTION__ << "emitting signal" << #signal; emit signal; } while( false )
 
 
 
@@ -22,12 +25,12 @@ RequestListener::RequestListener( FILE* istream, QObject* parent )
      , readNotifier_{ new QSocketNotifier{ fileno( istream_ ), QSocketNotifier::Read, this } }
 {
      qDebug() << __PRETTY_FUNCTION__;
-     readNotifier_->setEnabled( false );
+     disableListening();
      connect(
           readNotifier_
           , SIGNAL(activated(int))
           , this
-          , SLOT(readMessage())
+          , SLOT(acceptMessage())
           );
 }
 
@@ -35,43 +38,45 @@ RequestListener::RequestListener( FILE* istream, QObject* parent )
 RequestListener::~RequestListener()
 {
      qDebug() << __PRETTY_FUNCTION__;
-     readNotifier_->setEnabled( false );
 }
 
 
 void RequestListener::start()
 {
      qDebug() << __PRETTY_FUNCTION__;
+     enableListening();
 }
 
 
-void RequestListener::readMessage()
+void RequestListener::acceptMessage()
 {
      qDebug() << __PRETTY_FUNCTION__;
+
      QFile inputFile;
-
-     if( !inputFile.open( istream_, QIODevice::ReadOnly ) )
+     inputFile.open( istream_, QIODevice::ReadOnly );
+     if( inputFile.atEnd() )
      {
-          EMIT_AND_RETURN( readMessageError( QStringLiteral( "cannot connect to input stream" ) ) );
+          EMIT_DEBUG( inputChannelClosed() );
+          disableListening();
      }
-
-     std::int32_t messageLen = 0;
-     const auto actualReadBytes = inputFile.read( reinterpret_cast< char* >( &messageLen ), sizeof( messageLen ) );
-
-     if( actualReadBytes != sizeof( messageLen ) or messageLen < 0 )
+     else if( QByteArray message; readMessage( inputFile, message ) )
      {
-          if( inputFile.atEnd() )
-          {
-               EMIT_AND_RETURN( inputStreamClosed() );
-          }
-          EMIT_AND_RETURN( readMessageError( QStringLiteral( "message length reading error" ) ) );
+          EMIT_DEBUG( messageReceived( message ) );
      }
-     const auto message = inputFile.read( messageLen );
-     if( message.size() != messageLen )
-     {
-          EMIT_AND_RETURN( readMessageError( QStringLiteral( "message body reading error" ) ) );
-     }
-     EMIT_AND_RETURN( messageReceived( message ) );
+}
+
+
+void RequestListener::enableListening()
+{
+     qDebug() << __PRETTY_FUNCTION__;
+     readNotifier_->setEnabled( true );
+}
+
+
+void RequestListener::disableListening()
+{
+     qDebug() << __PRETTY_FUNCTION__;
+     readNotifier_->setEnabled( false );
 }
 
 
