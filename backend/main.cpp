@@ -3,8 +3,6 @@
 #include <QApplication>
 #include <application.h>
 
-#include <nmh/io.h>
-
 
 int main( int argc, char *argv[] )
 {
