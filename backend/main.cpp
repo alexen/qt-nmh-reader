@@ -3,10 +3,6 @@
 #include <QApplication>
 #include <application.h>
 
-#include <QFile>
-#include <QByteArray>
-#include <QDebug>
-
 #include <nmh/io.h>
 
 

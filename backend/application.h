@@ -14,6 +14,7 @@ namespace nmh {
 
 class RequestListener;
 class ResponseSender;
+class RequestRouter;
 
 
 class Application : public QMainWindow {
@@ -24,12 +25,15 @@ public:
 
      void start();
 
+     void closeEvent( QCloseEvent* );
+
 private slots:
-     void messageReceived( const QByteArray& );
+     void showMessage( const QByteArray& );
 
 private:
      Ui::Application *ui_ = {};
      RequestListener* requestListener_ = {};
+     RequestRouter* requestRouter_ = {};
      ResponseSender* responseSender_ = {};
 };
 

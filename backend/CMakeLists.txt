@@ -19,6 +19,7 @@ target_sources(
      PRIVATE
           request_listener.cpp
           response_sender.cpp
+          request_router.cpp
           application.cpp
           main.cpp
 )
