@@ -34,12 +34,18 @@ Application::Application( QWidget *parent )
      /// с записью инцидента в журнал приложения.
      connect(
           requestRouter_
-          , &RequestRouter::badRequest
+          , &RequestRouter::badRequestAccepted
           , this
           , [=]( const QByteArray& request, const QString& error ){
                qCritical() << "Bad request:" << request;
                responseSender_->sendErrorResponse( error );
           }
+          );
+     connect(
+          requestRouter_
+          , &RequestRouter::authRequestAccepted
+          , this
+          , &Application::handleAuthorizationRequest
           );
      connect(
           requestListener_
@@ -90,6 +96,12 @@ void Application::showMessage( const QByteArray& message )
      ui_->plainTextEdit->insertPlainText( message );
      newlineRequired = true;
      show();
+}
+
+
+void Application::handleAuthorizationRequest( const QByteArray& authData )
+{
+     qDebug() << __PRETTY_FUNCTION__ << ": data:" << authData.toHex();
 }
 
 

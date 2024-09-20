@@ -24,7 +24,7 @@ void RequestRouter::routeRequest( const QByteArray& request )
      if( jsonDoc.isNull() or not jsonDoc.isObject() )
      {
           qDebug() << __PRETTY_FUNCTION__ << ": emit badRequest()";
-          emit badRequest(
+          emit badRequestAccepted(
                request
                , QStringLiteral( "invalid JSON: " ) % error.errorString()
                );
@@ -43,18 +43,30 @@ void RequestRouter::routeJsonRequest( const QByteArray& request, const QJsonObje
      static const QString authCodeKey = "authCode";
      static const QString stopKey = "stop";
 
-     const auto& type = jo[ typeKey ];
-     if( type.isUndefined() )
+     if( const auto& type = jo[ typeKey ]; type.isUndefined() )
      {
-          emit badRequest( request, QStringLiteral( "invalid format: missing key " ) % typeKey );
+          emit badRequestAccepted( request, QStringLiteral( "invalid format: missing key " ) % typeKey );
      }
      else if( not type.isString() )
      {
-          emit badRequest( request, QStringLiteral( "invalid key type: " ) % typeKey );
+          emit badRequestAccepted( request, QStringLiteral( "invalid key type: " ) % typeKey );
      }
      else if( type == authRequestKey )
      {
-          qDebug() << __PRETTY_FUNCTION__ << ": not implemented yet";
+          static const QString dataKey = "data";
+
+          if( const auto& data = jo[ dataKey ]; data.isUndefined() )
+          {
+               emit badRequestAccepted( request, QStringLiteral( "invalid format: missing key " ) % dataKey );
+          }
+          else if( not data.isString() )
+          {
+               emit badRequestAccepted( request, QStringLiteral( "invalid key type: " ) % dataKey );
+          }
+          else
+          {
+               emit authRequestAccepted( QByteArray::fromHex( data.toString().toLocal8Bit() ) );
+          }
      }
      else if( type == authCodeKey )
      {
@@ -66,7 +78,7 @@ void RequestRouter::routeJsonRequest( const QByteArray& request, const QJsonObje
      }
      else
      {
-          emit badRequest( request, QStringLiteral( "invalid request type: " ) % type.toString() );
+          emit badRequestAccepted( request, QStringLiteral( "invalid request type: " ) % type.toString() );
      }
 }
 

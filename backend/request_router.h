@@ -15,7 +15,8 @@ public:
      explicit RequestRouter( QObject *parent = nullptr );
 
 signals:
-     void badRequest( const QByteArray& request, const QString& errorMessage );
+     void badRequestAccepted( const QByteArray& request, const QString& errorMessage );
+     void authRequestAccepted( const QByteArray& data );
 
 public slots:
      void routeRequest( const QByteArray& request );
