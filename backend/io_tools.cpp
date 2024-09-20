@@ -1,22 +1,21 @@
 #include <io_tools.h>
 
-#include <QFile>
+#include <QIODevice>
 #include <QByteArray>
-#include <QDebug>
 
 
 namespace alexen {
 namespace nmh {
 
 
-quint32 readMessageLength( QFile& input )
+quint32 readMessageLength( QIODevice& input )
 {
      quint32 len = {};
      input.read( reinterpret_cast< char* >( &len ), sizeof( len ) );
      return len;
 }
 
-bool readMessage( QFile& input, const quint32 len, QByteArray& output )
+bool readMessage( QIODevice& input, const quint32 len, QByteArray& output )
 {
      if( len > 0 )
      {
@@ -27,7 +26,7 @@ bool readMessage( QFile& input, const quint32 len, QByteArray& output )
 }
 
 
-bool readMessage( QFile& input, QByteArray& output )
+bool readMessage( QIODevice& input, QByteArray& output )
 {
      return readMessage( input, readMessageLength( input ), output );
 }
