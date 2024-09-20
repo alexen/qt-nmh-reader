@@ -28,6 +28,7 @@ if(BUILD_TESTING)
           ${UT_NAME}
           PRIVATE
                ${LIBRARY_NAME}
+               Qt5::Core
                GTest::gtest
                GTest::gtest_main
      )
