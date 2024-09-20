@@ -11,5 +11,10 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
      set(CMAKE_INSTALL_PREFIX $ENV{HOME}/.local/${PROJECT_NAME} CACHE PATH "" FORCE)
 endif()
 
+include(CTest)
+if(BUILD_TESTING)
+     find_package(GTest REQUIRED)
+endif()
+
 add_subdirectory(backend)
 add_subdirectory(extension)

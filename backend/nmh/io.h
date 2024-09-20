@@ -11,8 +11,8 @@ namespace nmh {
 
 
 bool readMessage( QIODevice& input, QByteArray& output );
-bool readMessage( QIODevice& input, const quint32 len, QByteArray& output )
-quint32 readMessageLength( QIODevice& input )
+bool readMessage( QIODevice& input, const quint32 len, QByteArray& output );
+quint32 readMessageLength( QIODevice& input );
 
 
 } // namespace nmh

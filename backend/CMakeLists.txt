@@ -7,11 +7,16 @@ find_package(
 )
 
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+
+add_subdirectory(nmh)
+
+
 add_executable(${APPLICATION_NAME})
 target_sources(
      ${APPLICATION_NAME}
      PRIVATE
-          io_tools.cpp
           request_listener.cpp
           response_sender.cpp
           application.cpp
@@ -21,6 +26,7 @@ target_link_libraries(
      ${APPLICATION_NAME}
      PRIVATE
           Qt5::Widgets
+          nmh
 )
 target_compile_options(
      ${APPLICATION_NAME}
@@ -41,7 +47,8 @@ set_target_properties(
 )
 target_include_directories(
      ${APPLICATION_NAME}
-     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+     PUBLIC
+          ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 include(GNUInstallDirs)
