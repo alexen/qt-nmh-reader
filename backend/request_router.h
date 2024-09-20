@@ -25,6 +25,7 @@ public slots:
 
 private:
      void routeJsonRequest( const QJsonObject& );
+     void emitInvalidRequestFormat();
 };
 
 

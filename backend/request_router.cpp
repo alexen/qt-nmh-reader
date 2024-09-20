@@ -20,15 +20,15 @@ void RequestRouter::routeRequest( const QByteArray& request )
 {
      qDebug() << __PRETTY_FUNCTION__ << ":" << request;
      QJsonParseError error;
-     const auto& jsonDoc = QJsonDocument::fromJson( request, &error );
-     if( jsonDoc.isNull() or not jsonDoc.isObject() )
+
+     const auto& jo = QJsonDocument::fromJson( request, &error ).object();
+     if( jo.isEmpty() )
      {
-          qDebug() << __PRETTY_FUNCTION__ << ": emit badRequest()";
-          emit badRequestAccepted( QStringLiteral( "invalid JSON: " ) % error.errorString() );
+          emitInvalidRequestFormat();
      }
      else
      {
-          routeJsonRequest( jsonDoc.object() );
+          routeJsonRequest( jo );
      }
 }
 
@@ -40,46 +40,37 @@ void RequestRouter::routeJsonRequest( const QJsonObject& jo )
      static const QString authCodeKey = "authCode";
      static const QString stopKey = "stop";
 
-     if( const auto& type = jo[ typeKey ]; type.isUndefined() )
+     static const QString noStrData = "-- no data --";
+
+     if( const auto& type = jo[ typeKey ].toString( noStrData ); type == noStrData )
      {
-          emit badRequestAccepted( QStringLiteral( "invalid format: missing key " ) % typeKey );
-     }
-     else if( not type.isString() )
-     {
-          emit badRequestAccepted( QStringLiteral( "invalid key type: " ) % typeKey );
+          emitInvalidRequestFormat();
      }
      else if( type == authRequestKey )
      {
           static const QString dataKey = "data";
 
-          if( const auto& data = jo[ dataKey ]; data.isUndefined() )
+          if( const auto& data = jo[ dataKey ].toString(); data == noStrData )
           {
-               emit badRequestAccepted( QStringLiteral( "invalid format: missing key " ) % dataKey );
-          }
-          else if( not data.isString() )
-          {
-               emit badRequestAccepted( QStringLiteral( "invalid key type: " ) % dataKey );
+               emitInvalidRequestFormat();
           }
           else
           {
-               emit authRequestAccepted( QByteArray::fromHex( data.toString().toLocal8Bit() ) );
+               emit authRequestAccepted( QByteArray::fromHex( data.toLocal8Bit() ) );
           }
      }
      else if( type == authCodeKey )
      {
           static const QString codeKey = "code";
+          static const int noIntData = -1;
 
-          if( const auto& code = jo[ codeKey ];code.isUndefined() )
+          if( const auto& code = jo[ codeKey ].toInt( noIntData ); code == noIntData )
           {
-               emit badRequestAccepted( QStringLiteral( "invalid format: missing key " ) % codeKey );
-          }
-          else if( code.isDouble() and code.toInt( -1 ) != -1 )
-          {
-               emit authCodeAccepted( code.toInt() );
+               emitInvalidRequestFormat();
           }
           else
           {
-               emit badRequestAccepted( QStringLiteral( "invalid key type: " ) % codeKey );
+               emit authCodeAccepted( code );
           }
      }
      else if( type == stopKey )
@@ -88,8 +79,15 @@ void RequestRouter::routeJsonRequest( const QJsonObject& jo )
      }
      else
      {
-          emit badRequestAccepted( QStringLiteral( "invalid request type: " ) % type.toString() );
+          emitInvalidRequestFormat();
      }
+}
+
+
+void RequestRouter::emitInvalidRequestFormat()
+{
+     static const QString message = "invalid request format";
+     emit badRequestAccepted( message );
 }
 
 
