@@ -44,7 +44,7 @@ void RequestRouter::routeJsonRequest( const QByteArray& request, const QJsonObje
      static const QString stopKey = "stop";
 
      const auto& type = jo[ typeKey ];
-     if( type.isNull() )
+     if( type.isUndefined() )
      {
           emit badRequest( request, QStringLiteral( "invalid format: missing key " ) % typeKey );
      }
