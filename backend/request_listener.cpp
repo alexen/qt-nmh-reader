@@ -30,6 +30,11 @@ RequestListener::RequestListener( FILE* istream, QObject* parent )
 }
 
 
+RequestListener::RequestListener( QObject* parent )
+     : RequestListener{ stdin, parent }
+{}
+
+
 RequestListener::~RequestListener()
 {
      qDebug() << __PRETTY_FUNCTION__;
@@ -50,6 +55,7 @@ void RequestListener::acceptMessage()
      QFile inputFile;
      inputFile.open( istream_, QIODevice::ReadOnly );
      qDebug() << __PRETTY_FUNCTION__ << ": eof:" << inputFile.atEnd();
+
      if( inputFile.atEnd() )
      {
           qDebug() << __PRETTY_FUNCTION__ << ": emit inputChannelClosed()";

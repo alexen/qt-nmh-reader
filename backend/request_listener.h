@@ -15,6 +15,7 @@ class RequestListener : public QObject {
      Q_OBJECT
 public:
      explicit RequestListener( FILE* istream, QObject* parent = nullptr );
+     explicit RequestListener( QObject* parent = nullptr );
      ~RequestListener();
 
 signals:
