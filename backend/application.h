@@ -30,7 +30,9 @@ private:
 
 private slots:
      void showMessage( const QByteArray& );
-     void handleAuthorizationRequest( const QByteArray& );
+     void authorize( const QByteArray& );
+     void authCode( int );
+     void stop();
 
 private:
      Ui::Application *ui_ = {};

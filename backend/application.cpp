@@ -25,31 +25,27 @@ Application::Application( QWidget *parent )
 
      /// Принятое сообщение направляем в маршрутизатор
      connect(
-          requestListener_
-          , &RequestListener::messageReceived
-          , requestRouter_
-          , &RequestRouter::routeRequest
-          );
-     /// Bad request пробрасываем в отправитель ответов,
-     /// с записью инцидента в журнал приложения.
-     connect(
-          requestRouter_
-          , &RequestRouter::badRequestAccepted
-          , this
-          , [=]( const QByteArray& request, const QString& error ){
-               qCritical() << "Bad request:" << request;
-               responseSender_->sendErrorResponse( error );
-          }
+          requestListener_, &RequestListener::messageReceived
+          , requestRouter_, &RequestRouter::routeRequest
           );
      connect(
-          requestRouter_
-          , &RequestRouter::authRequestAccepted
-          , this
-          , &Application::handleAuthorizationRequest
+          requestRouter_, &RequestRouter::badRequestAccepted
+          , responseSender_, &ResponseSender::sendErrorResponse
           );
      connect(
-          requestListener_
-          , &RequestListener::inputChannelClosed
+          requestRouter_, &RequestRouter::authRequestAccepted
+          , this, &Application::authorize
+          );
+     connect(
+          requestRouter_, &RequestRouter::authCodeAccepted
+          , this, &Application::authCode
+          );
+     connect(
+          requestRouter_, &RequestRouter::stopRequestAccepted
+          , this, &Application::stop
+          );
+     connect(
+          requestListener_, &RequestListener::inputChannelClosed
           , []{ qApp->quit(); }
           );
 
@@ -99,9 +95,21 @@ void Application::showMessage( const QByteArray& message )
 }
 
 
-void Application::handleAuthorizationRequest( const QByteArray& authData )
+void Application::authorize( const QByteArray& authData )
 {
      qDebug() << __PRETTY_FUNCTION__ << ": data:" << authData.toHex();
+}
+
+
+void Application::authCode( int code )
+{
+     qDebug() << __PRETTY_FUNCTION__ << ": code:" << code;
+}
+
+
+void Application::stop()
+{
+     qDebug() << __PRETTY_FUNCTION__;
 }
 
 

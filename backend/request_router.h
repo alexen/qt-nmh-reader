@@ -15,14 +15,16 @@ public:
      explicit RequestRouter( QObject *parent = nullptr );
 
 signals:
-     void badRequestAccepted( const QByteArray& request, const QString& errorMessage );
+     void badRequestAccepted( const QString& errorMessage );
      void authRequestAccepted( const QByteArray& data );
+     void authCodeAccepted( int );
+     void stopRequestAccepted();
 
 public slots:
      void routeRequest( const QByteArray& request );
 
 private:
-     void routeJsonRequest( const QByteArray&, const QJsonObject& );
+     void routeJsonRequest( const QJsonObject& );
 };
 
 
