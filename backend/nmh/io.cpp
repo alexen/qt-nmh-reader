@@ -6,6 +6,7 @@
 
 namespace alexen {
 namespace nmh {
+namespace io {
 
 
 quint32 readMessageLength( QIODevice& input )
@@ -32,5 +33,14 @@ bool readMessage( QIODevice& input, QByteArray& output )
 }
 
 
+bool writeMessage( const QByteArray& data, QIODevice& output )
+{
+     const quint32 len = data.size();
+     return output.write( reinterpret_cast< const char* >( &len ), sizeof( len ) ) == sizeof( len )
+          and output.write( data ) == data.size();
+}
+
+
+} // namespace io
 } // namespace nmh
 } // namespace alexen

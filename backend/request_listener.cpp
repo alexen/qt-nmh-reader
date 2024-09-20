@@ -62,7 +62,7 @@ void RequestListener::acceptMessage()
           emit inputChannelClosed();
           disableListening();
      }
-     else if( QByteArray message; readMessage( inputFile, message ) )
+     else if( QByteArray message; io::readMessage( inputFile, message ) )
      {
           qDebug() << __PRETTY_FUNCTION__ << ": emit messageReceived(" << message << ")";
           emit messageReceived( message );
