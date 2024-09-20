@@ -25,6 +25,7 @@ public:
 
      void start();
 
+private:
      void closeEvent( QCloseEvent* );
 
 private slots:
