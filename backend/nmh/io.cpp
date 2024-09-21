@@ -9,14 +9,15 @@ namespace nmh {
 namespace io {
 
 
-quint32 readMessageLength( QIODevice& input )
+static quint32 readMessageLength( QIODevice& input )
 {
      quint32 len = {};
      input.read( reinterpret_cast< char* >( &len ), sizeof( len ) );
      return len;
 }
 
-bool readMessage( QIODevice& input, const quint32 len, QByteArray& output )
+
+static bool readMessage( QIODevice& input, const quint32 len, QByteArray& output )
 {
      if( len > 0 )
      {

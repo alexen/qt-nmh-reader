@@ -9,7 +9,6 @@
 
 
 using alexen::nmh::io::readMessage;
-using alexen::nmh::io::readMessageLength;
 using alexen::nmh::io::writeMessage;
 
 namespace {
@@ -56,14 +55,6 @@ TEST( NmhIoTest, WriteMessageTest )
      tmpFile.close();
      tmpFile.open();
      ASSERT_EQ( tmpFile.readAll(), testenv::nmhMessage );
-}
-TEST( NmhIoTest, ReadMessageLenghtTest )
-{
-     QTemporaryFile tmpFile;
-     testenv::tools::saveRawData( tmpFile, testenv::nmhMessage );
-
-     tmpFile.open();
-     ASSERT_EQ( readMessageLength( tmpFile ), testenv::sourceText.size() );
 }
 TEST( NmhIoTest, ReadMessageTest )
 {
