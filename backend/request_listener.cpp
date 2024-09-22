@@ -23,9 +23,9 @@ RequestListener::RequestListener( FILE* istream, QObject* parent )
      disableListening();
      connect(
           readNotifier_
-          , SIGNAL(activated(int))
+          , &QSocketNotifier::activated
           , this
-          , SLOT(acceptMessage())
+          , &RequestListener::acceptMessage
           );
 }
 
