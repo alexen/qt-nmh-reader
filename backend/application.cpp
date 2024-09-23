@@ -1,6 +1,8 @@
 #include <application.h>
 
 #include <QDebug>
+#include <QTime>
+#include <QTimer>
 
 #include <ui_application.h>
 
@@ -57,6 +59,8 @@ Application::Application( QWidget *parent )
           , &Application::showMessage
           );
      /// FOR DEBUG ONLY
+
+     show();
 }
 
 
@@ -70,6 +74,16 @@ Application::~Application()
 void Application::start()
 {
      requestListener_->start();
+
+     QTimer* timer = new QTimer{ this };
+     connect(
+          timer
+          , &QTimer::timeout
+          , this
+          , &Application::visualTimerCountdown
+          );
+     timer->start( 1000 );
+     visualTimerCountdown();
 }
 
 
@@ -91,7 +105,6 @@ void Application::showMessage( const QByteArray& message )
      }
      ui_->plainTextEdit->insertPlainText( message );
      newlineRequired = true;
-     show();
 }
 
 
@@ -110,6 +123,18 @@ void Application::authCode( int code )
 void Application::stop()
 {
      qDebug() << __PRETTY_FUNCTION__;
+}
+
+
+void Application::visualTimerCountdown()
+{
+     QTime time;
+     time.setHMS( 0, 0, shutdownTimeoutSec_ );
+     ui_->timerLabel->setText( time.toString( "mm:ss" ) );
+     if( shutdownTimeoutSec_-- == 0 )
+     {
+          qApp->quit();
+     }
 }
 
 
