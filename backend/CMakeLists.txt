@@ -17,9 +17,13 @@ add_executable(${APPLICATION_NAME})
 target_sources(
      ${APPLICATION_NAME}
      PRIVATE
+          request_listener.h
           request_listener.cpp
+          response_sender.h
           response_sender.cpp
+          request_router.h
           request_router.cpp
+          application.h
           application.cpp
           interval_timer.h
           interval_timer.cpp
