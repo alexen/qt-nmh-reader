@@ -1,5 +1,7 @@
 #include <application.h>
 
+#include <chrono>
+
 #include <QDebug>
 #include <QTime>
 #include <QTimer>
@@ -9,6 +11,7 @@
 #include <request_listener.h>
 #include <request_router.h>
 #include <response_sender.h>
+#include <interval_timer.h>
 
 
 namespace alexen {
@@ -60,6 +63,20 @@ Application::Application( QWidget *parent )
           );
      /// FOR DEBUG ONLY
 
+     IntervalTimer* itimer = new IntervalTimer{ this };
+     connect(
+          itimer
+          , &IntervalTimer::timeout
+          , []{ qDebug() << "Time is up!"; qApp->quit(); }
+          );
+     connect(
+          itimer
+          , &IntervalTimer::interval
+          , this
+          , &Application::visualTimerCountdown
+          );
+     itimer->start( std::chrono::seconds{ 30 }, std::chrono::seconds{ 1 } );
+     visualTimerCountdown( itimer->remainingTime() );
      show();
 }
 
@@ -73,17 +90,17 @@ Application::~Application()
 
 void Application::start()
 {
-     requestListener_->start();
+//     requestListener_->start();
 
-     QTimer* timer = new QTimer{ this };
-     connect(
-          timer
-          , &QTimer::timeout
-          , this
-          , &Application::visualTimerCountdown
-          );
-     timer->start( 1000 );
-     visualTimerCountdown();
+//     QTimer* timer = new QTimer{ this };
+//     connect(
+//          timer
+//          , &QTimer::timeout
+//          , this
+//          , &Application::visualTimerCountdown
+//          );
+//     timer->start( 1000 );
+//     visualTimerCountdown();
 }
 
 
@@ -126,15 +143,13 @@ void Application::stop()
 }
 
 
-void Application::visualTimerCountdown()
+void Application::visualTimerCountdown( std::chrono::milliseconds ms )
 {
+     qDebug() << __PRETTY_FUNCTION__;
+
      QTime time;
-     time.setHMS( 0, 0, shutdownTimeoutSec_ );
+     time.setHMS( 0, 0, std::chrono::duration_cast< std::chrono::seconds >( ms ).count() );
      ui_->timerLabel->setText( time.toString( "mm:ss" ) );
-     if( shutdownTimeoutSec_-- == 0 )
-     {
-          qApp->quit();
-     }
 }
 
 

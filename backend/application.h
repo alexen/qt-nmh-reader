@@ -36,7 +36,7 @@ private slots:
      void authCode( int );
      void stop();
 
-     void visualTimerCountdown();
+     void visualTimerCountdown( std::chrono::milliseconds );
 
 private:
      Ui::Application *ui_ = {};

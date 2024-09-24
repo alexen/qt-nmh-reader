@@ -21,6 +21,8 @@ target_sources(
           response_sender.cpp
           request_router.cpp
           application.cpp
+          interval_timer.h
+          interval_timer.cpp
           main.cpp
 )
 target_link_libraries(
